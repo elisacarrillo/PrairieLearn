@@ -836,6 +836,16 @@ module.exports.initExpress = function () {
     require('./pages/instructorAssessmentSettings/instructorAssessmentSettings'),
   ]);
   app.use(
+    '/pl/course_instance/:course_instance_id/instructor/assessment/:assessment_id/access_overrides',
+    [
+      function (req, res, next) {
+        res.locals.navSubPage = 'access_overrides';
+        next();
+      },
+      require('./pages/instructorAssessmentAccessOverrides/instructorAssessmentAccessOverrides'),
+    ],
+  );
+  app.use(
     '/pl/course_instance/:course_instance_id/instructor/assessment/:assessment_id/questions',
     [
       function (req, res, next) {
