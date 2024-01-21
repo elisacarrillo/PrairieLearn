@@ -104,6 +104,8 @@ export const CourseSchema = z.object({
   sync_warnings: z.string().nullable(),
   template_course: z.boolean(),
   title: z.string().nullable(),
+  numTokens: z.number().nullable(),
+  daysPerToken: z.number().nullable()
 });
 export type Course = z.infer<typeof CourseSchema>;
 
@@ -122,6 +124,7 @@ export const CourseInstanceSchema = z.object({
   sync_job_sequence_id: IdSchema.nullable(),
   sync_warnings: z.string().nullable(),
   uuid: z.string().nullable(),
+  
 });
 export type CourseInstance = z.infer<typeof CourseInstanceSchema>;
 

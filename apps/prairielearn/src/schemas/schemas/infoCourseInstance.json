@@ -87,6 +87,14 @@
       "type": "string",
       "default": "Set",
       "enum": ["Set", "Module"]
+    },
+    "numTokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "daysPerToken": {
+      "type": "integer",
+      "minimum": 1
     }
   }
 }

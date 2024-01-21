@@ -230,6 +230,8 @@ const FILE_UUID_REGEX =
  * @property {Topic[]} topics
  * @property {AssessmentSet[]} assessmentSets
  * @property {AssessmentModule[]} assessmentModules
+ * @property {number} numTokens
+ * @property {number} daysPerToken
  */
 
 /** @typedef {"Student" | "TA" | "Instructor" | "Superuser"} UserRole */
@@ -770,6 +772,8 @@ export async function loadCourseInfo(coursePath) {
     name: info.name,
     title: info.title,
     timezone: info.timezone,
+    numTokens: info.numTokens,
+    daysPerToken: info.daysPerToken,
     assessmentSets,
     assessmentModules,
     tags,

@@ -74,6 +74,30 @@
                     assessmentSetName: row.assessment_set_name,
                     assessmentNumber: row.assessment_number,
                     }) %>
+                <!-- <button class="btn btn-primary btn-sm request-token-button" data-assessment-id="<%= row.assessment_id %>">Request Extension</button> -->
+                <button class="btn btn-primary btn-sm request-token-button" data-assessment-id="<%= row.assessment_id %>" data-days-per-token="<%= row.daysPerToken %>" data-num-tokens="<%= row.numTokens %>">Request Extension</button>
+
+                <div class="modal fade" id="requestExtensionModal" tabindex="-1" role="dialog" aria-labelledby="requestExtensionModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="requestExtensionModalLabel">Request Extension</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <!-- Add your form or other content here -->
+                        <p>You have <span id="numTokens"></span> tokens left.</p>
+                        <p>Each token extends the deadline by <span id="daysPerToken"></span> days.</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </td>
               <td class="text-center align-middle">
                 <% if (row.multiple_instance_header) { %>
@@ -90,6 +114,7 @@
                 <% } %>
                 <% } // multiple_instance_header %>
               </td>
+
             </tr>
             <% }); %>
           </tbody>
@@ -99,5 +124,31 @@
       <p>Don't see your exam? Exams for this course are only made available to students with checked-in exam reservations. See a proctor for assistance.</p>
       <% } %>
     </main>
+    <script>
+      $(document).ready(function() {
+        $('.request-token-button').on('click', function() {
+          // Get the assessment ID from the button
+          const assessmentId = $(this).data('assessment-id');
+  
+          // Get the daysPerToken and numTokens values for this assessment
+          // This will depend on how you're storing these values
+          // For this example, let's assume you have a function getAssessmentData that takes an assessment ID and returns an object with the assessment data
+          // const assessmentData = getAssessmentData(assessmentId);
+  
+          // Update the placeholders in the modal
+          // $('#numTokens').text(assessmentData.numTokens);
+          // $('#daysPerToken').text(assessmentData.daysPerToken);
+          // const assessmentId = $(this).data('assessment-id');
+          const daysPerToken = $(this).data('days-per-token');
+          const numTokens = $(this).data('num-tokens');
+
+          // Update the placeholders in the modal
+          $('#numTokens').text(numTokens);
+          $('#daysPerToken').text(daysPerToken);
+          // Show the modal
+          $('#requestExtensionModal').modal('show');
+        });
+      });
+    </script>
   </body>
 </html>

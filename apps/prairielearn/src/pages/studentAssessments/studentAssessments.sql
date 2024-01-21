@@ -28,10 +28,13 @@ WITH
       am.id AS assessment_module_id,
       am.name AS assessment_module_name,
       am.heading AS assessment_module_heading,
-      am.number AS assessment_module_number
+      am.number AS assessment_module_number,
+      ci.daysPerToken,
+      ci.numTokens
     FROM
       assessments AS a
       JOIN course_instances AS ci ON (ci.id = a.course_instance_id)
+     
       JOIN assessment_sets AS aset ON (aset.id = a.assessment_set_id)
       LEFT JOIN LATERAL authz_assessment (a.id, $authz_data, $req_date, ci.display_timezone) AS aa ON TRUE
       LEFT JOIN assessment_modules AS am ON am.id = a.assessment_module_id

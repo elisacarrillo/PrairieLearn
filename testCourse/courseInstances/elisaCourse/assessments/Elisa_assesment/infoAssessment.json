@@ -1,0 +1,17 @@
+{
+    "uuid": "25c09925-eef9-495b-a5e7-c2912242c258",
+    "type": "Homework",
+    "title": "Rah",
+    "set": "Homework",
+    "number": "1",
+    "allowAccess": [],
+    "zones": [ 
+        {
+            "title": "Hard Questions",
+            "questions" : [
+                {"id": "addNumbers", "points":12},
+                {"id": "addVectors", "points":12}
+            ]
+        }
+    ]
+}
