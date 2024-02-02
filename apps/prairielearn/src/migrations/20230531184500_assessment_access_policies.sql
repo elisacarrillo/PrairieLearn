@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS
     end_date TIMESTAMP WITH TIME ZONE NOT NULL,
     credit INTEGER NOT NULL,
     note TEXT,
+    num_tokens BIGINT,
+    tokens_per_day BIGINT,
     created_by BIGINT REFERENCES users (user_id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     CHECK (num_nonnulls (user_id, group_id) <= 1),

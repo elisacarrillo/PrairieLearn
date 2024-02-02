@@ -7,6 +7,64 @@
     <script>
       $(function () {
           $('[data-toggle="popover"]').popover({sanitize: false})
+          $('#add_new_override').on('submit', function (event) {
+            var startDate = new Date();
+            var endDate = new Date($('#end_date').val());
+            if (startDate >= endDate) {
+              event.preventDefault();
+              $('#end_date').addClass('is-invalid');
+              $('#end_date_error').text('End date should be greater than the start date.').show();
+            }
+            var userId = '<%= user.uid %>';
+            if (userId === '' && groupName === '') {
+              event.preventDefault();
+              $('#group_id').addClass('is-invalid');
+              $('#group_id_error').text('Either user ID or group ID should be filled.').show();
+            }
+          });
+          $('.edit-override-button').on('click', function (event) {
+            event.preventDefault();
+            var button = $(this);
+            var editOverrideForm = $('#edit-override-form');
+            editOverrideForm.find('#edit-assessment_id').val(button.data('assessment-id'));
+            editOverrideForm.find('#edit-group_id').val(button.data('group-id'));
+            editOverrideForm.find('#edit-credit').val(button.data('credit'));
+            var policy_start_date = new Date(button.data('start-date'))
+            var policy_start_date_string = policy_start_date.toISOString().slice(0, 16);
+            var policy_end_date = new Date(button.data('end-date'))
+            var policy_end_date_string = policy_end_date.toISOString().slice(0, 16);
+            editOverrideForm.find('#edit-end_date').val(policy_end_date_string);
+            editOverrideForm.find('#edit-created_by').val(button.data('created-by'));
+            editOverrideForm.find('#edit-note').val(button.data('note'));
+            editOverrideForm.find('#edit-type').val(button.data('type'));
+
+            // Show the modal form
+            $('#editPolicyModal').modal('show');
+          });
+          // Event listener for delete button
+          $('.delete-button').on('click', function () {
+            var button = $(this);
+            var student_uid = button.data('student-uid');
+            var assessment_id = button.data('assessment-id');
+            var groupId = button.data('group-id');
+
+            // Set the values of the form's hidden input fields
+            $('#deleteModal input[name="student_uid"]').val(student_uid);
+            $('#deleteModal input[name="assessment_id"]').val(assessment_id);
+            $('#deleteModal input[name="group_id"]').val(groupId);
+
+            // Show the modal confirmation dialog
+            $('#deleteModal').modal('show');
+          });
+
+          // Event listener for confirm delete button in the modal
+          $('#confirmDeleteButton').on('click', function () {
+            // Set the __action value to "delete_override"
+            $('form[name="delete-override-form"] input[name="__action"]').val('delete_override');
+
+            // Submit the form
+            $('form[name="delete-override-form"]').submit();
+          });
       });
     </script>
     <%- include('../partials/navbar', {navPage: 'assessments'}); %>
@@ -64,8 +122,11 @@
                 <% } %>
               </td>
               <td class="text-center align-middle">
+               
                 <% if (row.assessment_instance_open !== false) { %>
                     <%= row.credit_date_string %>
+                    
+                    
                 <% } else { %>
                     Assessment closed.
                 <% } %>
@@ -74,31 +135,55 @@
                     assessmentSetName: row.assessment_set_name,
                     assessmentNumber: row.assessment_number,
                     }) %>
-                <!-- <button class="btn btn-primary btn-sm request-token-button" data-assessment-id="<%= row.assessment_id %>">Request Extension</button> -->
-                <button class="btn btn-primary btn-sm request-token-button" data-assessment-id="<%= row.assessment_id %>" data-days-per-token="<%= row.daysPerToken %>" data-num-tokens="<%= row.numTokens %>">Request Extension</button>
-
-                <div class="modal fade" id="requestExtensionModal" tabindex="-1" role="dialog" aria-labelledby="requestExtensionModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="requestExtensionModalLabel">Request Extension</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <!-- Add your form or other content here -->
-                        <p>You have <span id="numTokens"></span> tokens left.</p>
-                        <p>Each token extends the deadline by <span id="daysPerToken"></span> days.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </td>
+                    <button type="button" class="btn-sm btn-light " data-toggle="modal" data-target="#requestExtensionModal" >
+                      <i class="fas fa-pencil"></i>
+                   </button>
+    
+                   <div class="modal fade" id="requestExtensionModal" tabindex="-1" role="dialog" aria-labelledby="requestExtensionModalLabel" aria-hidden="true">
+                     <div class="modal-dialog" role="document">
+                       <div class="modal-content">
+                         <div class="modal-header">
+                           <h5 class="modal-title" id="requestExtensionModalLabel">Request Extension</h5>
+                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                             <span aria-hidden="true">&times;</span>
+                           </button>
+                         </div>
+                         <div class="modal-body">
+                           <form id="request-extension-form" method="POST">
+                             <input type="hidden" name="__action" value="request_extension">
+                             <input type="hidden" name="__csrf_token" value="<%= __csrf_token %>">
+                             <input type="hidden" class="form-control" id="current_student_uid" name="current_student_uid" value="<%= user.uid %>" required readonly>
+                             <div class="form-group">
+                               <label for="num_tokens">Number of Tokens Left</label>
+                               <p id="num_tokens"><%= row.num_tokens %></p>
+                               <div class="form-group">
+                                 <label for="log_row">Log Row</label>
+                                 <p id="log_row"><%= JSON.stringify(row) %></p>
+                                 
+                                 
+                             </div>
+                             <div class="form-group">
+                               <label for="tokens_per_day">Tokens Per Day</label>
+                               <p id="tokens_per_day"><%= row.tokens_per_day %></p>
+                             </div>
+                             <div class="form-group">
+                               <label for="course_name">Course Name</label>
+                               <p id="course_name"><%= course.name %></p>
+                             </div>
+                             <div class="form-group">
+                               <label for="start_date">End Date</label>
+                               <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                             </div>
+                           </form>
+                         </div>
+                         <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                           <button type="submit" class="btn btn-primary" form="request-extension-form">Submit</button>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                
               <td class="text-center align-middle">
                 <% if (row.multiple_instance_header) { %>
                 <a href="<%= urlPrefix %><%= row.link %>" class="btn btn-primary btn-sm" role="button">New instance</a>
@@ -124,31 +209,5 @@
       <p>Don't see your exam? Exams for this course are only made available to students with checked-in exam reservations. See a proctor for assistance.</p>
       <% } %>
     </main>
-    <script>
-      $(document).ready(function() {
-        $('.request-token-button').on('click', function() {
-          // Get the assessment ID from the button
-          const assessmentId = $(this).data('assessment-id');
-  
-          // Get the daysPerToken and numTokens values for this assessment
-          // This will depend on how you're storing these values
-          // For this example, let's assume you have a function getAssessmentData that takes an assessment ID and returns an object with the assessment data
-          // const assessmentData = getAssessmentData(assessmentId);
-  
-          // Update the placeholders in the modal
-          // $('#numTokens').text(assessmentData.numTokens);
-          // $('#daysPerToken').text(assessmentData.daysPerToken);
-          // const assessmentId = $(this).data('assessment-id');
-          const daysPerToken = $(this).data('days-per-token');
-          const numTokens = $(this).data('num-tokens');
-
-          // Update the placeholders in the modal
-          $('#numTokens').text(numTokens);
-          $('#daysPerToken').text(daysPerToken);
-          // Show the modal
-          $('#requestExtensionModal').modal('show');
-        });
-      });
-    </script>
   </body>
 </html>

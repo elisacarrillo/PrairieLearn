@@ -28,9 +28,7 @@ WITH
       am.id AS assessment_module_id,
       am.name AS assessment_module_name,
       am.heading AS assessment_module_heading,
-      am.number AS assessment_module_number,
-      ci.daysPerToken,
-      ci.numTokens
+      am.number AS assessment_module_number
     FROM
       assessments AS a
       JOIN course_instances AS ci ON (ci.id = a.course_instance_id)

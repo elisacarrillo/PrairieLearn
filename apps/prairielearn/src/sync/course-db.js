@@ -230,8 +230,8 @@ const FILE_UUID_REGEX =
  * @property {Topic[]} topics
  * @property {AssessmentSet[]} assessmentSets
  * @property {AssessmentModule[]} assessmentModules
- * @property {number} numTokens
- * @property {number} daysPerToken
+ * @property {number} num_tokens
+ * @property {number} days_per_token
  */
 
 /** @typedef {"Student" | "TA" | "Instructor" | "Superuser"} UserRole */
