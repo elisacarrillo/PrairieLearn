@@ -16,7 +16,7 @@ for a real example of this.
 By convention,
 all element files are named the same as the element they belong to. That directory
 should contain an `info.json` file that contains metadata about the element, including
-which file is the element controller and any dependencies of the element. See [the section on dependencies](#element-dependencies) for more information
+which file is the element controller and any dependencies of the element. See [the section on dependencies](#element-dependencies) for more information.
 
 Each element should have a `.py` controller that contains the functions listed
 in the next section. This controller is responsible for rendering the element,
@@ -36,7 +36,7 @@ pl-my-element
 
 And an `info.json` with the following contents:
 
-```json title="info.json"
+```json
 {
   "controller": "pl-my-element.py",
   "dependencies": {
@@ -100,7 +100,7 @@ The element functions are:
 | `prepare()`  | `None`        | `correct_answers`, `params`                                                                              | `extensions`, `options`, `variant_seed`                                                                                                                                                                                                     | Final question preparation after element code has run. Can modify data as necessary.                                                                                                                                                                                                                                                                                             |
 | `render()`   | `str` (html)  |                                                                                                          | `correct_answers`, `editable`, `extensions`, `feedback`, `format_errors`, `manual_grading`, `num_valid_submissions`, `options`, `panel`, `params`, `partial_scores`, `raw_submitted_answers`, `score`, `submitted_answers`, `variant_seed`, | Render the HTML for one panel and return it as a string.                                                                                                                                                                                                                                                                                                                         |
 | `parse()`    | `None`        | `correct_answers`, `feedback`, `format_errors`, `params`, `submitted_answers`                            | `extensions`, `options`, `raw_submitted_answers`, `variant_seed`                                                                                                                                                                            | Parse the `data["submitted_answers"][var]` data entered by the student, modifying this variable.                                                                                                                                                                                                                                                                                 |
-| `grade()`    | `None`        | `correct_answers`, `feedback`, `format_errors`, `params`, `partial_scores`, `score`, `submitted_answers` | `extensions`, `options`, `raw_submitted_answers`, `variant_seed`                                                                                                                                                                            | Grade `data["submitted_answers"][var]` to determine a score. Store the score and any feedback in `data["partial_scores"][var]["score"]` and `data["partial_scores"][var]["feedback"]` respectively. **Note:** Avoid modifying the `data["feedback"]` dictionary, as this is meant to be used by custom questions.                                                                |
+| `grade()`    | `None`        | `correct_answers`, `feedback`, `format_errors`, `params`, `partial_scores`, `score`, `submitted_answers` | `extensions`, `options`, `raw_submitted_answers`, `variant_seed`                                                                                                                                                                            | Grade `data["submitted_answers"][var]` to determine a score. Store the score and any feedback in `data["partial_scores"][var]["score"]` and `data["partial_scores"][var]["feedback"]` respectively. __Note:__ Avoid modifying the `data["feedback"]` dictionary, as this is meant to be used by custom questions.                                                                |
 | `test()`     | `None`        | `format_errors`, `partial_scores`, `raw_submitted_answers`, `score`                                      | `extensions`, `gradable`, `test_type`                                                                                                                                                                                                       | Creates a test submission for this element, used when running tests from the "Settings" panel. Should set a value in `data["raw_submitted_answers"][var]` and expected score in `data["partial_scores"][var]` (or `data["format_errors"][var]` if `invalid`). The type of input to test is given in `data["test_type"]`, and can be one of `correct`, `incorrect`, or `invalid`. |
 
 The above table describes the purpose of each function and the values in `data` that are allowed to be modified. Any permitted changes to the values in `data` will be persisted to the database. No function is allowed to add or delete keys in `data`.
@@ -111,7 +111,7 @@ It's likely that your element will depend on certain client-side assets, such as
 
 Dependencies are listed in your element's `info.json`. You can configure them for your element as follows:
 
-```json title="info.json"
+```json
 {
   "controller": "pl-my-element.py",
   "dependencies": {
@@ -140,7 +140,7 @@ While the use of node module dependencies in course elements is supported, it is
 
 In addition to static dependencies, elements can also declare dynamic dependencies, corresponding to scripts that are loaded only if they are deemed necessary. For example, if an element may use the `d3` library, but only in certain cases, it can declare a dependency on `d3`:
 
-```json title="info.json"
+```json
 {
   "controller": "pl-my-element.py",
   "dependencies": {
